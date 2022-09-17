@@ -10,6 +10,10 @@ opkg update
 #    (a ext4 at the offset that can be seen by running losetup /dev/loop0).
 # see https://openwrt.org/docs/guide-user/installation/openwrt_x86#partition_layout
 opkg install parted losetup resize2fs
+if [ -d /sys/firmware/efi ]; then
+    opkg install sgdisk
+    sgdisk --move-second-header /dev/sda
+fi
 parted --script /dev/sda resizepart 2 100%
 losetup -c /dev/loop0
 resize2fs /dev/loop0
