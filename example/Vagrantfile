@@ -23,4 +23,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'
   config.vm.provision 'shell', inline: 'df -h', name: 'disk space usage'
   config.vm.provision 'shell', inline: "opkg list-installed >/vagrant/#{config.vm.box}-packages.txt", name: 'package list'
+  # see https://openwrt.org/docs/guide-user/virtualization/docker_host
+  config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker', name: 'install docker'
+  config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
 end
