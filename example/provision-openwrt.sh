@@ -3,6 +3,8 @@ set -euxo pipefail
 
 CONFIG_LAN_IP="$1"
 CONFIG_LAN_NETMASK="$2"
+CONFIG_DEBIAN_MAC="$3"
+CONFIG_DEBIAN_IP="$4"
 
 # configure the network.
 uci batch <<EOF
@@ -17,3 +19,10 @@ set network.lan.netmask=$CONFIG_LAN_NETMASK
 EOF
 uci commit
 service network reload
+
+# configure static leases.
+while uci -q delete dhcp.@host[0]; do :; done
+id="$(uci add dhcp host)"
+uci set "dhcp.$id.mac=$CONFIG_DEBIAN_MAC"
+uci set "dhcp.$id.ip=$CONFIG_DEBIAN_IP"
+uci commit dhcp

@@ -9,6 +9,9 @@ CONFIG_DEFAULT_PREFIX   = "#{File.basename(File.dirname(File.dirname(__FILE__)))
 CONFIG_WAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-wan"
 CONFIG_LAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-lan"
 
+CONFIG_DEBIAN_MAC = '08:00:27:00:00:0a'
+CONFIG_DEBIAN_IP  = '10.0.20.10'
+
 Vagrant.configure(2) do |config|
   config.vm.provider 'libvirt' do |lv, config|
     lv.default_prefix = CONFIG_DEFAULT_PREFIX
@@ -47,7 +50,12 @@ Vagrant.configure(2) do |config|
     config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'
     config.vm.provision 'shell', inline: 'df -h', name: 'disk space usage'
     config.vm.provision 'shell', inline: "opkg list-installed >/vagrant/#{config.vm.box}-packages.txt", name: 'package list'
-    config.vm.provision 'shell', path: 'provision-openwrt.sh', args: [CONFIG_LAN_IP, CONFIG_LAN_NETMASK]
+    config.vm.provision 'shell', path: 'provision-openwrt.sh', args: [
+      CONFIG_LAN_IP,
+      CONFIG_LAN_NETMASK,
+      CONFIG_DEBIAN_MAC,
+      CONFIG_DEBIAN_IP
+    ]
     # see https://openwrt.org/docs/guide-user/virtualization/docker_host
     config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker', name: 'install docker'
     config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
@@ -60,6 +68,7 @@ Vagrant.configure(2) do |config|
       lv.memory = 256
       lv.qemu_use_agent = true
       lv.management_network_name = CONFIG_LAN_NETWORK_NAME
+      lv.management_network_mac = CONFIG_DEBIAN_MAC
       config.vm.synced_folder '.', '/vagrant', disabled: true
     end
   end
