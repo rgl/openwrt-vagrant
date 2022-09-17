@@ -1,29 +1,55 @@
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
+CONFIG_WAN_NETWORK = '10.0.10.0'
+CONFIG_LAN_NETWORK = '10.0.20.0'
+CONFIG_LAN_IP      = '10.0.20.254'
+CONFIG_LAN_NETMASK = '255.255.255.0'
+
+CONFIG_DEFAULT_PREFIX   = "#{File.basename(File.dirname(File.dirname(__FILE__)))}-"
+CONFIG_WAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-wan"
+CONFIG_LAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-lan"
+
 Vagrant.configure(2) do |config|
-  config.vm.box = 'openwrt-22.03-amd64'
-  #config.vm.box = 'openwrt-22.03-uefi-amd64'
-
-  config.vm.hostname = 'openwrt.lan'
-
   config.vm.provider 'libvirt' do |lv, config|
-    lv.default_prefix = "#{File.basename(File.dirname(File.dirname(__FILE__)))}_"
-    lv.memory = 2048
+    lv.default_prefix = CONFIG_DEFAULT_PREFIX
     lv.cpus = 2
     lv.cpu_mode = 'host-passthrough'
     #lv.nested = true # nested virtualization.
     lv.keymap = 'pt'
-    #config.vm.synced_folder '.', '/vagrant', disabled: true
-    config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: [
-      '.vagrant/',
-      '.git/',
-      '*.box']
   end
 
-  config.vm.provision 'shell', inline: 'echo "firmware type is $([ -d /sys/firmware/efi ] && echo \'UEFI\' || echo \'BIOS\')"', name: 'firmware type'
-  config.vm.provision 'shell', inline: 'sfdisk -l', name: 'disk partitions'
-  config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'
-  config.vm.provision 'shell', inline: 'df -h', name: 'disk space usage'
-  config.vm.provision 'shell', inline: "opkg list-installed >/vagrant/#{config.vm.box}-packages.txt", name: 'package list'
-  # see https://openwrt.org/docs/guide-user/virtualization/docker_host
-  config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker', name: 'install docker'
-  config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
+  config.vm.define :openwrt do |config|
+    config.vm.box = 'openwrt-22.03-amd64'
+    #config.vm.box = 'openwrt-22.03-uefi-amd64'
+    config.vm.hostname = 'openwrt.lan'
+    config.vm.provider 'libvirt' do |lv, config|
+      lv.memory = 2*1024
+      config.vm.network :private_network,
+        ip: CONFIG_WAN_NETWORK,
+        auto_config: false,
+        libvirt__network_name: CONFIG_WAN_NETWORK_NAME,
+        libvirt__dhcp_enabled: true,
+        libvirt__forward_mode: 'nat'
+      config.vm.network :private_network,
+        ip: CONFIG_LAN_NETWORK,
+        auto_config: false,
+        libvirt__network_name: CONFIG_LAN_NETWORK_NAME,
+        libvirt__dhcp_enabled: false,
+        libvirt__forward_mode: 'none'
+      #config.vm.synced_folder '.', '/vagrant', disabled: true
+      config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: [
+        '.vagrant/',
+        '.git/',
+        '*.box']
+    end
+    config.vm.provision 'shell', inline: 'echo "firmware type is $([ -d /sys/firmware/efi ] && echo \'UEFI\' || echo \'BIOS\')"', name: 'firmware type'
+    config.vm.provision 'shell', inline: 'sfdisk -l', name: 'disk partitions'
+    config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'
+    config.vm.provision 'shell', inline: 'df -h', name: 'disk space usage'
+    config.vm.provision 'shell', inline: "opkg list-installed >/vagrant/#{config.vm.box}-packages.txt", name: 'package list'
+    config.vm.provision 'shell', path: 'provision-openwrt.sh', args: [CONFIG_LAN_IP, CONFIG_LAN_NETMASK]
+    # see https://openwrt.org/docs/guide-user/virtualization/docker_host
+    config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker', name: 'install docker'
+    config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
+  end
 end
