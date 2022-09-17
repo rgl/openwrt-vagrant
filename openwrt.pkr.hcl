@@ -1,7 +1,7 @@
 variable "disk_size" {
-  type        = number
-  default     = 1*1024
-  description = "disk size in GiB"
+  type        = string
+  default     = "1G"
+  description = "disk size (e.g. 1G)"
 }
 
 variable "img_url" {
