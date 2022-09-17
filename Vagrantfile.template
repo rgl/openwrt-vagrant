@@ -1,0 +1,13 @@
+Vagrant.configure(2) do |config|
+  config.ssh.shell = '/bin/ash'
+  config.ssh.sudo_command = '%c'
+  config.ssh.username = 'root'
+  config.ssh.password = 'vagrant'
+  config.vm.provider 'libvirt' do |lv|
+    lv.machine_type = 'q35'
+    lv.graphics_type = 'spice'
+    lv.video_type = 'qxl'
+    lv.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
+    lv.channel :type => 'spicevmc', :target_name => 'com.redhat.spice.0', :target_type => 'virtio'
+  end
+end

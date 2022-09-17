@@ -1,0 +1,24 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = 'openwrt-22.03-amd64'
+
+  config.vm.hostname = 'openwrt.lan'
+
+  config.vm.provider 'libvirt' do |lv, config|
+    lv.default_prefix = "#{File.basename(File.dirname(File.dirname(__FILE__)))}_"
+    lv.memory = 2048
+    lv.cpus = 2
+    lv.cpu_mode = 'host-passthrough'
+    #lv.nested = true # nested virtualization.
+    lv.keymap = 'pt'
+    #config.vm.synced_folder '.', '/vagrant', disabled: true
+    config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: [
+      '.vagrant/',
+      '.git/',
+      '*.box']
+  end
+
+  config.vm.provision 'shell', inline: 'sfdisk -l', name: 'disk partitions'
+  config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'
+  config.vm.provision 'shell', inline: 'df -h', name: 'disk space usage'
+  config.vm.provision 'shell', inline: "opkg list-installed >/vagrant/#{config.vm.box}-packages.txt", name: 'package list'
+end
