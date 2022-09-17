@@ -52,4 +52,15 @@ Vagrant.configure(2) do |config|
     config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker', name: 'install docker'
     config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
   end
+
+  config.vm.define :debian do |config|
+    config.vm.box = 'debian-11-amd64'
+    config.vm.hostname = 'debian.lan'
+    config.vm.provider 'libvirt' do |lv, config|
+      lv.memory = 256
+      lv.qemu_use_agent = true
+      lv.management_network_name = CONFIG_LAN_NETWORK_NAME
+      config.vm.synced_folder '.', '/vagrant', disabled: true
+    end
+  end
 end

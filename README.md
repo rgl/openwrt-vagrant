@@ -6,7 +6,11 @@ OpenWrt is installed using Packer and Vagrant.
 
 # Usage
 
-Install [Packer](https://www.packer.io/) and [Vagrant](https://www.vagrantup.com/).
+Install:
+
+* [Packer](https://www.packer.io/)
+* [Vagrant](https://www.vagrantup.com/)
+* [Debian 11 base image](https://github.com/rgl/debian-vagrant)
 
 Create the base image:
 
@@ -14,15 +18,27 @@ Create the base image:
 make build-libvirt
 ```
 
-Try it using Vagrant:
+Start the example Vagrant environment:
 
 ```bash
 cd example
 vagrant up --no-destroy-on-error --provider=libvirt
-vagrant ssh
 ```
 
-Try it using the [LuCI web interface](https://openwrt.org/docs/guide-user/luci/start) at the created machine address.
+Access the [LuCI web interface](https://openwrt.org/docs/guide-user/luci/start)
+at the created machine address with the `root` user and the `vagrant` password.
+
+Access the `openwrt` virtual machine:
+
+```bash
+vagrant ssh openwrt
+```
+
+Access the `debian` virtual machine, which is connected to the OpenWrt `lan` network:
+
+```bash
+vagrant ssh debian
+```
 
 # Notes
 
