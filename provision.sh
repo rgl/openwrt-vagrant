@@ -25,6 +25,10 @@ opkg install sfdisk lsblk
 opkg install usbutils kmod-usb3 kmod-usb-storage-uas
 opkg install pciutils
 
+# delete all the network devices (e.g. br-lan).
+while uci -q delete network.@device[0]; do :; done
+uci commit
+
 # customize the shell.
 mkdir -p /etc/profile.d
 cat >/etc/profile.d/login.sh <<'EOF'
