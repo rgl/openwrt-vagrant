@@ -26,7 +26,9 @@ vagrant up --no-destroy-on-error --provider=libvirt
 ```
 
 Access the [LuCI web interface](https://openwrt.org/docs/guide-user/luci/start)
-at the created machine address with the `root` user and the `vagrant` password.
+at the created machine address with the `root` user and the `vagrant` password:
+
+http://10.0.20.254
 
 Access the `openwrt` virtual machine:
 
