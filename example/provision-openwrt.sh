@@ -6,6 +6,9 @@ CONFIG_LAN_NETMASK="$2"
 CONFIG_DEBIAN_MAC="$3"
 CONFIG_DEBIAN_IP="$4"
 
+# update the package cache.
+opkg update
+
 # configure the network.
 uci batch <<EOF
 set network.wan=interface
@@ -26,3 +29,6 @@ id="$(uci add dhcp host)"
 uci set "dhcp.$id.mac=$CONFIG_DEBIAN_MAC"
 uci set "dhcp.$id.ip=$CONFIG_DEBIAN_IP"
 uci commit dhcp
+
+# install tcpdump.
+opkg install tcpdump
