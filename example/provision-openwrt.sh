@@ -66,6 +66,15 @@ service https-dns-proxy restart
 while [ -z "$(dig +short debian.org @127.0.0.1 -p 5053)" ]; do sleep 5; done
 while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
 
+# configure ad blocking.
+# see https://openwrt.org/docs/guide-user/services/ad-blocking
+# see https://openwrt.org/packages/pkgdata/adblock
+# see https://github.com/openwrt/packages/tree/openwrt-22.03/net/adblock
+opkg install adblock luci-app-adblock && service rpcd restart
+
+# wait until adblock is ready.
+while [ -z "$(service adblock status | grep -E 'adblock_status\s*:\s*enabled')" ]; do sleep 5; done
+
 # configure static leases.
 while uci -q delete dhcp.@host[0]; do :; done
 id="$(uci add dhcp host)"
