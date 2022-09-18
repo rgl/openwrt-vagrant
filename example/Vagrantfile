@@ -71,7 +71,7 @@ Vagrant.configure(2) do |config|
       lv.management_network_name = CONFIG_LAN_NETWORK_NAME
       lv.management_network_mac = CONFIG_DEBIAN_MAC
       config.vm.synced_folder '.', '/vagrant', disabled: true
-      config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump', name: 'install tools'
+      config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
     end
   end
 end
