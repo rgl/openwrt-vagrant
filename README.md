@@ -47,6 +47,15 @@ vagrant ssh debian
 * Be aware that the bootloader and the machine console can be accessed without password.
   * For more details see [Serial console password](https://oldwiki.archive.openwrt.org/doc/howto/serial.console.password).
 
+# Commands
+
+* `logread -e dnsmasq`
+  * show the `dnsmasq` service logs.
+* `uci show`
+  * show the configuration.
+* `nft list ruleset`
+  * show the [nftables](https://wiki.archlinux.org/title/Nftables) rules.
+
 # References
 
 * [OpenWrt Documentation](https://openwrt.org/docs)
