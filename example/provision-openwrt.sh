@@ -70,10 +70,26 @@ while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
 # see https://openwrt.org/docs/guide-user/services/ad-blocking
 # see https://openwrt.org/packages/pkgdata/adblock
 # see https://github.com/openwrt/packages/tree/openwrt-22.03/net/adblock
+# see /etc/config/adblock
+# see /tmp/dnsmasq.d/adb_list.overall
 opkg install adblock luci-app-adblock && service rpcd restart
 
 # wait until adblock is ready.
 while [ -z "$(service adblock status | grep -E 'adblock_status\s*:\s*enabled')" ]; do sleep 5; done
+
+# configure adblock.
+uci delete adblock.global.adb_sources
+uci add_list adblock.global.adb_sources=adaway
+uci add_list adblock.global.adb_sources=adguard
+uci add_list adblock.global.adb_sources=disconnect
+uci add_list adblock.global.adb_sources=stevenblack
+uci add_list adblock.global.adb_sources=yoyo
+# configure the stevenblack variants.
+uci -q delete adblock.global.adb_stb_sources || true
+uci add_list adblock.global.adb_stb_sources=hosts # standard.
+# apply changes.
+uci commit adblock
+service adblock reload
 
 # configure static leases.
 while uci -q delete dhcp.@host[0]; do :; done
