@@ -56,6 +56,8 @@ vagrant ssh debian
   * show the configuration.
 * `nft list ruleset`
   * show the [nftables](https://wiki.archlinux.org/title/Nftables) rules.
+* `opkg list-installed`
+  * show the installed packages.
 
 # References
 
