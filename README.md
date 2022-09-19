@@ -10,6 +10,7 @@ Install:
 
 * [Packer](https://www.packer.io/)
 * [Vagrant](https://www.vagrantup.com/)
+* [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
 * [Debian 11 base image](https://github.com/rgl/debian-vagrant)
 
 Create the base image:
