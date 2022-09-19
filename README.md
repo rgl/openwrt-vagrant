@@ -58,6 +58,10 @@ vagrant ssh debian
   * show the [nftables](https://wiki.archlinux.org/title/Nftables) rules.
 * `opkg list-installed`
   * show the installed packages.
+* `dig +short @v4.ident.me`
+  * show the current public ipv4 address from the internet viewpoint (see https://api.ident.me/).
+* `dig +short @v6.ident.me`
+  * show the current public ipv6 address from the internet viewpoint (see https://api.ident.me/).
 
 # References
 
