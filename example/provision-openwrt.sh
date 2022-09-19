@@ -87,6 +87,12 @@ uci add_list adblock.global.adb_sources=yoyo
 # configure the stevenblack variants.
 uci -q delete adblock.global.adb_stb_sources || true
 uci add_list adblock.global.adb_stb_sources=hosts # standard.
+# configure the allow list.
+cat >/etc/adblock/adblock.whitelist <<'EOF'
+# allow the twitter link shortening. my twitter addiction must go on...
+# NB this is denied by the yoyo list.
+t.co
+EOF
 # apply changes.
 uci commit adblock
 service adblock reload
