@@ -93,6 +93,9 @@ cat >/etc/adblock/adblock.whitelist <<'EOF'
 # NB this is denied by the yoyo list.
 t.co
 EOF
+# configure the startup trigger.
+uci set adblock.global.adb_trigger=wan
+uci set adblock.global.adb_triggerdelay=15
 # apply changes.
 uci commit adblock
 service adblock reload
