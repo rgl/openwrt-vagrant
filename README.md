@@ -23,6 +23,9 @@ Start the example Vagrant environment:
 
 ```bash
 cd example
+# optionally set a netbird setup key to automatically configure netbird.
+# see https://app.netbird.io/setup-keys
+export NETBIRD_SETUP_KEY=""
 vagrant up --no-destroy-on-error --provider=libvirt
 ```
 

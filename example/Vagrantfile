@@ -60,6 +60,8 @@ Vagrant.configure(2) do |config|
     # see https://openwrt.org/docs/guide-user/virtualization/docker_host
     config.vm.provision 'shell', inline: 'opkg update && opkg install dockerd docker luci-app-dockerman && service rpcd restart', name: 'install docker'
     config.vm.provision 'shell', inline: 'docker run --rm --net=host ruilopes/example-docker-buildx-go:v1.10.0', name: 'run a container'
+    # install netbird.
+    config.vm.provision 'shell', path: 'provision-netbird.sh', env: {'NETBIRD_SETUP_KEY' => ENV['NETBIRD_SETUP_KEY']}, name: 'install netbird'
   end
 
   config.vm.define :debian do |config|
