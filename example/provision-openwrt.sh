@@ -109,3 +109,6 @@ uci commit dhcp
 
 # install tcpdump.
 opkg install tcpdump
+
+# install the wake-on-lan ui (etherwake frontend).
+opkg install luci-app-wol
