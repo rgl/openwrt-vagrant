@@ -112,3 +112,8 @@ opkg install tcpdump
 
 # install the wake-on-lan ui (etherwake frontend).
 opkg install luci-app-wol
+
+# install the Attended Sysupgrade application.
+# NB this will be available under the System, Attended Sysupgrade LuCI menu.
+# see https://openwrt.org/docs/guide-user/installation/attended.sysupgrade
+opkg install luci-app-attendedsysupgrade
