@@ -31,7 +31,9 @@ else
     cat <<'EOF'
 # WARNING
 # WARNING since you did not provide the NETBIRD_SETUP_KEY environment variable
-# WARNING netbird was not configured. you have to configure it manually.
+# WARNING netbird was not configured. you have to configure it manually using:
+# WARNING
+# WARNING   netbird up
 # WARNING
 EOF
 fi
