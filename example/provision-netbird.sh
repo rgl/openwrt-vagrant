@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/messense/openwrt-netbird/releases
-version="${NETBIRD_VERSION:-0.10.2}"
+version="${NETBIRD_VERSION:-0.10.3}"
 
 # install the wireguard tools.
 # NB this is not strictly required, but it allows us to use the wg
