@@ -46,6 +46,17 @@ Access the `debian` virtual machine, which is connected to the OpenWrt `lan` net
 vagrant ssh debian
 ```
 
+## Network Packet Capture
+
+You can easily capture and see traffic from the host with the `wireshark.sh`
+script, e.g., to capture the traffic from the `eth1` (wan) interface:
+
+```bash
+# NB interfaces: eth1 (wan), eth2 (lan).
+# NB ports: 53 (DNS), 853 (DoT), 443 (DoH).
+./wireshark.sh openwrt eth1 'port 53 or port 853'
+```
+
 # Notes
 
 * Be aware that the bootloader and the machine console can be accessed without password.

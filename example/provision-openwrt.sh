@@ -5,6 +5,8 @@ CONFIG_LAN_IP="$1"
 CONFIG_LAN_NETMASK="$2"
 CONFIG_DEBIAN_MAC="$3"
 CONFIG_DEBIAN_IP="$4"
+CONFIG_USE_DNSMASQ='0' # 0: replace dnsmasq with odhcpd and unbound. 1: use dnsmasq.
+CONFIG_DOMAIN="$(uci get system.@system[0].hostname | sed -E 's,[^.]+\.(.+),\1,')"
 
 # update the package cache.
 opkg update
@@ -28,7 +30,66 @@ while [ -z "$(ip addr show dev eth1 | grep -E ' inet \d+(\.\d+)+/')" ]; do sleep
 CONFIG_LAN_IP_RE="$(echo "$CONFIG_LAN_IP" | sed -E 's,([.]),\\\1,g')"
 while [ -z "$(ip addr show dev eth2 | grep -E " inet $CONFIG_LAN_IP_RE/")" ]; do sleep 5; done
 
-# configure doh (dns over https).
+# install tcpdump.
+opkg install tcpdump
+
+# install dig.
+opkg install bind-dig
+
+# replace dnsmasq with odhcpd and unbound.
+if [ "$CONFIG_USE_DNSMASQ" == '0' ]; then
+# see https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#replacing_dnsmasq_with_odhcpd_and_unbound
+# see https://openwrt.org/docs/guide-user/services/dns/dot_unbound
+# see https://openwrt.org/docs/techref/odhcpd
+# see https://github.com/openwrt/packages/blob/master/net/unbound/files/README.md#config-unbound
+# use odhcpd as the DHCP server.
+opkg remove dnsmasq odhcpd-ipv6only
+opkg install odhcpd
+uci -q delete dhcp.lan.domain || true
+uci add_list dhcp.lan.domain=$CONFIG_DOMAIN
+uci -q delete dhcp.@dnsmasq[0]
+uci set dhcp.lan.dhcpv4=server
+uci set dhcp.odhcpd.maindhcp=1
+uci commit dhcp
+service odhcpd restart
+# use unbound as the DNS server/resolver/forwarder.
+opkg install unbound-control unbound-daemon
+uci set unbound.ub_main.domain=$CONFIG_DOMAIN
+uci set unbound.@unbound[0].add_local_fqdn=1
+uci set unbound.@unbound[0].add_wan_fqdn=1
+uci set unbound.@unbound[0].dhcp4_slaac6=1
+uci set unbound.@unbound[0].dhcp_link=odhcpd
+uci set unbound.@unbound[0].unbound_control=1
+uci commit unbound
+service unbound restart
+uci set dhcp.odhcpd.leasetrigger=/usr/lib/unbound/odhcpd.sh
+uci commit dhcp
+service odhcpd restart
+# install the unbound luci application (available in the Services, Recursive DNS menu).
+opkg install luci-app-unbound && service rpcd restart
+# configure DoT (DNS over TLS).
+# see https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-tls/
+# NB if your local network is also using OpenWRT to Force Router DNS resolution,
+#    DoT will not work, as DoT requests will probably be intercepted by the
+#    existing OpenWRT instance; so you have to disable it there.
+# NB only a single forward zone can be enabled. if you try to enable more than
+#    one, it will be ignored as can be seen in the logs as:
+#       error: duplicate forward zone . ignored.
+#    for using other upstream resolvers, you have to delete the existing fwd
+#    zones and manually configure them.
+uci set unbound.fwd_google.enabled=0
+uci set unbound.fwd_google.fallback=0
+uci set unbound.fwd_cloudflare.enabled=1
+uci set unbound.fwd_cloudflare.fallback=0
+uci commit unbound
+service unbound restart
+# show status.
+unbound-control status
+fi
+
+# use dnsmasq.
+if [ "$CONFIG_USE_DNSMASQ" == '1' ]; then
+# configure DoH (DNS over HTTPS).
 # NB this configures dnsmasq to proxy requests to the local https-dns-proxy
 #    service(s), which in turn will use doh to resolve the requests.
 # see https://en.wikipedia.org/wiki/DNS_over_HTTPS
@@ -39,7 +100,6 @@ while [ -z "$(ip addr show dev eth2 | grep -E " inet $CONFIG_LAN_IP_RE/")" ]; do
 # see https://support.mozilla.org/en-US/kb/canary-domain-use-application-dnsnet
 # see http://10.0.20.254/cgi-bin/luci/admin/network/dhcp
 # see http://10.0.20.254/cgi-bin/luci/admin/services/https-dns-proxy
-opkg install bind-dig
 opkg install https-dns-proxy
 opkg install luci-app-https-dns-proxy && service rpcd restart
 # delete the existing configuration.
@@ -61,9 +121,11 @@ uci set "https-dns-proxy.$id.bootstrap_dns=9.9.9.9,149.112.112.112"
 uci set "https-dns-proxy.$id.resolver_url=https://dns.quad9.net/dns-query"
 uci commit https-dns-proxy
 service https-dns-proxy restart
+# wait until names can be resolved from the first https-dns-proxy resolver (e.g. google).
+while [ -z "$(dig +short debian.org @127.0.0.1 -p 5053)" ]; do sleep 5; done
+fi
 
 # wait until names can be resolved.
-while [ -z "$(dig +short debian.org @127.0.0.1 -p 5053)" ]; do sleep 5; done
 while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
 
 # configure ad blocking.
@@ -71,7 +133,8 @@ while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
 # see https://openwrt.org/packages/pkgdata/adblock
 # see https://github.com/openwrt/packages/tree/openwrt-22.03/net/adblock
 # see /etc/config/adblock
-# see /tmp/dnsmasq.d/adb_list.overall
+# see /tmp/dnsmasq.d/adb_list.overall (when using dnsmasq as the DNS forwarder)
+# see /var/lib/unbound/adb_list.overall (when using unbound as the DNS forwarder)
 opkg install adblock luci-app-adblock && service rpcd restart
 
 # wait until adblock is ready.
@@ -103,12 +166,19 @@ service adblock reload
 # configure static leases.
 while uci -q delete dhcp.@host[0]; do :; done
 id="$(uci add dhcp host)"
+uci set "dhcp.$id.name=debian"
+uci set "dhcp.$id.dns=1"
 uci set "dhcp.$id.mac=$CONFIG_DEBIAN_MAC"
 uci set "dhcp.$id.ip=$CONFIG_DEBIAN_IP"
 uci commit dhcp
+if [ "$CONFIG_USE_DNSMASQ" == '1' ]; then
+service dnsmasq reload
+else
+service odhcpd reload
+fi
 
-# install tcpdump.
-opkg install tcpdump
+# install diff utilities.
+opkg install diffutils
 
 # install the wake-on-lan ui (etherwake frontend).
 opkg install luci-app-wol
