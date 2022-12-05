@@ -73,7 +73,8 @@ Vagrant.configure(2) do |config|
       lv.management_network_name = CONFIG_LAN_NETWORK_NAME
       lv.management_network_mac = CONFIG_DEBIAN_MAC
       config.vm.synced_folder '.', '/vagrant', disabled: true
-      config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
     end
+    config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
+    config.vm.provision 'shell', path: 'provision-netbird-debian.sh', env: {'NETBIRD_SETUP_KEY' => ENV['NETBIRD_SETUP_KEY']}, name: 'install netbird'
   end
 end
