@@ -13,6 +13,7 @@ Install:
 * [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
 * [Debian 11 base image](https://github.com/rgl/debian-vagrant)
 * [Ubuntu 22.04 base image](https://github.com/rgl/ubuntu-vagrant)
+* [Windows 2022 base image](https://github.com/rgl/windows-vagrant)
 
 Create the base image:
 
@@ -56,6 +57,14 @@ vagrant ssh ubuntu
 #    the netbird.cloud domain in the wt0 interface.
 #    see https://netbird.io/docs/how-to-guides/nameservers
 resolvectl
+# ping the debian machine using the netbird.cloud domain.
+ping debian.netbird.cloud
+```
+
+Access the `windows` virtual machine, which is connected to the OpenWrt `lan` network:
+
+```bash
+vagrant ssh windows
 # ping the debian machine using the netbird.cloud domain.
 ping debian.netbird.cloud
 ```

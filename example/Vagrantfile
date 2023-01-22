@@ -13,6 +13,8 @@ CONFIG_DEBIAN_MAC   = '08:00:27:00:00:0a'
 CONFIG_DEBIAN_IP    = '10.0.20.10'
 CONFIG_UBUNTU_MAC   = '08:00:27:00:00:0b'
 CONFIG_UBUNTU_IP    = '10.0.20.11'
+CONFIG_WINDOWS_MAC  = '08:00:27:00:00:0c'
+CONFIG_WINDOWS_IP   = '10.0.20.12'
 
 Vagrant.configure(2) do |config|
   config.vm.provider 'libvirt' do |lv, config|
@@ -58,7 +60,9 @@ Vagrant.configure(2) do |config|
       CONFIG_DEBIAN_MAC,
       CONFIG_DEBIAN_IP,
       CONFIG_UBUNTU_MAC,
-      CONFIG_UBUNTU_IP
+      CONFIG_UBUNTU_IP,
+      CONFIG_WINDOWS_MAC,
+      CONFIG_WINDOWS_IP
     ]
     # install docker.
     # see https://openwrt.org/docs/guide-user/virtualization/docker_host
@@ -94,5 +98,18 @@ Vagrant.configure(2) do |config|
     end
     config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
     config.vm.provision 'shell', path: 'provision-netbird-debian.sh', env: {'NETBIRD_SETUP_KEY' => ENV['NETBIRD_SETUP_KEY']}, name: 'install netbird'
+  end
+
+  config.vm.define :windows do |config|
+    config.vm.box = 'windows-2022-amd64'
+    config.vm.hostname = 'windows'
+    config.vm.provider 'libvirt' do |lv, config|
+      lv.memory = 2*1024
+      lv.qemu_use_agent = true
+      lv.management_network_name = CONFIG_LAN_NETWORK_NAME
+      lv.management_network_mac = CONFIG_WINDOWS_MAC
+      config.vm.synced_folder '.', '/vagrant', disabled: true
+    end
+    config.vm.provision 'shell', path: 'provision-netbird-windows.ps1', env: {'NETBIRD_SETUP_KEY' => ENV['NETBIRD_SETUP_KEY']}, name: 'install netbird'
   end
 end
