@@ -5,6 +5,8 @@ CONFIG_LAN_IP="$1"
 CONFIG_LAN_NETMASK="$2"
 CONFIG_DEBIAN_MAC="$3"
 CONFIG_DEBIAN_IP="$4"
+CONFIG_UBUNTU_MAC="$5"
+CONFIG_UBUNTU_IP="$6"
 CONFIG_USE_DNSMASQ='0' # 0: replace dnsmasq with odhcpd and unbound. 1: use dnsmasq.
 CONFIG_DOMAIN="$(uci get system.@system[0].hostname | sed -E 's,[^.]+\.(.+),\1,')"
 
@@ -170,6 +172,11 @@ uci set "dhcp.$id.name=debian"
 uci set "dhcp.$id.dns=1"
 uci set "dhcp.$id.mac=$CONFIG_DEBIAN_MAC"
 uci set "dhcp.$id.ip=$CONFIG_DEBIAN_IP"
+id="$(uci add dhcp host)"
+uci set "dhcp.$id.name=ubuntu"
+uci set "dhcp.$id.dns=1"
+uci set "dhcp.$id.mac=$CONFIG_UBUNTU_MAC"
+uci set "dhcp.$id.ip=$CONFIG_UBUNTU_IP"
 uci commit dhcp
 if [ "$CONFIG_USE_DNSMASQ" == '1' ]; then
 service dnsmasq reload

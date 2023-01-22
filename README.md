@@ -12,6 +12,7 @@ Install:
 * [Vagrant](https://www.vagrantup.com/)
 * [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
 * [Debian 11 base image](https://github.com/rgl/debian-vagrant)
+* [Ubuntu 22.04 base image](https://github.com/rgl/ubuntu-vagrant)
 
 Create the base image:
 
@@ -44,6 +45,19 @@ Access the `debian` virtual machine, which is connected to the OpenWrt `lan` net
 
 ```bash
 vagrant ssh debian
+```
+
+Access the `ubuntu` virtual machine, which is connected to the OpenWrt `lan` network:
+
+```bash
+vagrant ssh ubuntu
+# see the systemd-resolved status.
+# NB when netbird is up, it should register itself as the DNS server for
+#    the netbird.cloud domain in the wt0 interface.
+#    see https://netbird.io/docs/how-to-guides/nameservers
+resolvectl
+# ping the debian machine using the netbird.cloud domain.
+ping debian.netbird.cloud
 ```
 
 ## Network Packet Capture

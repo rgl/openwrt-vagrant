@@ -9,8 +9,10 @@ CONFIG_DEFAULT_PREFIX   = "#{File.basename(File.dirname(File.dirname(__FILE__)))
 CONFIG_WAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-wan"
 CONFIG_LAN_NETWORK_NAME = "#{CONFIG_DEFAULT_PREFIX}-lan"
 
-CONFIG_DEBIAN_MAC = '08:00:27:00:00:0a'
-CONFIG_DEBIAN_IP  = '10.0.20.10'
+CONFIG_DEBIAN_MAC   = '08:00:27:00:00:0a'
+CONFIG_DEBIAN_IP    = '10.0.20.10'
+CONFIG_UBUNTU_MAC   = '08:00:27:00:00:0b'
+CONFIG_UBUNTU_IP    = '10.0.20.11'
 
 Vagrant.configure(2) do |config|
   config.vm.provider 'libvirt' do |lv, config|
@@ -54,7 +56,9 @@ Vagrant.configure(2) do |config|
       CONFIG_LAN_IP,
       CONFIG_LAN_NETMASK,
       CONFIG_DEBIAN_MAC,
-      CONFIG_DEBIAN_IP
+      CONFIG_DEBIAN_IP,
+      CONFIG_UBUNTU_MAC,
+      CONFIG_UBUNTU_IP
     ]
     # install docker.
     # see https://openwrt.org/docs/guide-user/virtualization/docker_host
@@ -72,6 +76,20 @@ Vagrant.configure(2) do |config|
       lv.qemu_use_agent = true
       lv.management_network_name = CONFIG_LAN_NETWORK_NAME
       lv.management_network_mac = CONFIG_DEBIAN_MAC
+      config.vm.synced_folder '.', '/vagrant', disabled: true
+    end
+    config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
+    config.vm.provision 'shell', path: 'provision-netbird-debian.sh', env: {'NETBIRD_SETUP_KEY' => ENV['NETBIRD_SETUP_KEY']}, name: 'install netbird'
+  end
+
+  config.vm.define :ubuntu do |config|
+    config.vm.box = 'ubuntu-22.04-amd64'
+    config.vm.hostname = 'ubuntu.lan'
+    config.vm.provider 'libvirt' do |lv, config|
+      lv.memory = 1024
+      lv.qemu_use_agent = true
+      lv.management_network_name = CONFIG_LAN_NETWORK_NAME
+      lv.management_network_mac = CONFIG_UBUNTU_MAC
       config.vm.synced_folder '.', '/vagrant', disabled: true
     end
     config.vm.provision 'shell', inline: 'apt-get update && apt-get install -y tcpdump dnsutils', name: 'install tools'
