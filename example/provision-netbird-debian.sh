@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/messense/openwrt-netbird/releases
-version="${NETBIRD_VERSION:-0.12.0}"
+version="${NETBIRD_VERSION:-0.13.0}"
 
 # install.
 # NB to configure netbird, you still need to connect from the ui or
