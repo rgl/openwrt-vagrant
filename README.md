@@ -91,6 +91,8 @@ script, e.g., to capture the traffic from the `eth1` (wan) interface:
   * show the `dnsmasq` service logs.
 * `uci show`
   * show the configuration.
+* `fw4 print`
+  * show the firewall configuration.
 * `nft list ruleset`
   * show the [nftables](https://wiki.archlinux.org/title/Nftables) rules.
 * `opkg list-installed`
