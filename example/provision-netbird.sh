@@ -1,20 +1,13 @@
 #!/bin/ash
 set -euxo pipefail
 
-# see https://github.com/messense/openwrt-netbird/releases
-version="${NETBIRD_VERSION:-0.13.0}"
-
 # install the wireguard tools.
 # NB this is not strictly required, but it allows us to use the wg
 #    command to further inspect things.
 opkg install wireguard-tools
 
-# download and install.
-url="https://github.com/messense/openwrt-netbird/releases/download/v$version/netbird_$version-1_x86_64.ipk"
-t="/tmp/$(basename "$url")"
-wget -q -O "$t" "$url"
-opkg install "$t"
-rm "$t"
+# install.
+opkg install netbird
 
 # configure and start netbird.
 if [ -n "$NETBIRD_SETUP_KEY" ]; then
