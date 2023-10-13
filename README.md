@@ -11,7 +11,7 @@ Install:
 * [Packer](https://www.packer.io/)
 * [Vagrant](https://www.vagrantup.com/)
 * [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
-* [Debian 11 base image](https://github.com/rgl/debian-vagrant)
+* [Debian 12 base image](https://github.com/rgl/debian-vagrant)
 * [Ubuntu 22.04 base image](https://github.com/rgl/ubuntu-vagrant)
 * [Windows 2022 base image](https://github.com/rgl/windows-vagrant)
 

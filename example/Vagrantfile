@@ -73,10 +73,10 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define :debian do |config|
-    config.vm.box = 'debian-11-amd64'
+    config.vm.box = 'debian-12-amd64'
     config.vm.hostname = 'debian.lan'
     config.vm.provider 'libvirt' do |lv, config|
-      lv.memory = 256
+      lv.memory = 512
       lv.qemu_use_agent = true
       lv.management_network_name = CONFIG_LAN_NETWORK_NAME
       lv.management_network_mac = CONFIG_DEBIAN_MAC
