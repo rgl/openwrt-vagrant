@@ -135,7 +135,7 @@ while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
 # configure ad blocking.
 # see https://openwrt.org/docs/guide-user/services/ad-blocking
 # see https://openwrt.org/packages/pkgdata/adblock
-# see https://github.com/openwrt/packages/tree/openwrt-22.03/net/adblock
+# see https://github.com/openwrt/packages/tree/openwrt-23.05/net/adblock
 # see /etc/config/adblock
 # see /tmp/dnsmasq.d/adb_list.overall (when using dnsmasq as the DNS forwarder)
 # see /var/lib/unbound/adb_list.overall (when using unbound as the DNS forwarder)
