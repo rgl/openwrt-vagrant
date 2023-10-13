@@ -9,7 +9,7 @@ trap {
 }
 
 # see https://github.com/messense/openwrt-netbird/releases
-$version = '0.13.0'
+$version = '0.23.9'
 
 # install.
 # NB to configure netbird, you still need to connect from the ui or
