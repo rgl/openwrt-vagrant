@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/netbirdio/netbird/releases
-version="${NETBIRD_VERSION:-0.23.9}"
+version="${NETBIRD_VERSION:-0.24.2}"
 
 # install.
 # NB to configure netbird, you still need to connect from the ui or
