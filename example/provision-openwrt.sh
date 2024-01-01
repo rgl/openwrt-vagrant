@@ -49,6 +49,17 @@ if [ "$CONFIG_USE_DNSMASQ" == '0' ]; then
 # use odhcpd as the DHCP server.
 opkg remove dnsmasq odhcpd-ipv6only
 opkg install odhcpd
+# NB with odhcpd, dhcp.lan.domain sets the DHCP option 119 (Domain Search / DNS
+#    domain search list). this behaviour is different than with dnsmasq, which
+#    sets the DHCP option 15 (Domain Name / The DNS domain name of the client).
+# NB with odhcpd, there is no way to set the DHCP option 15 (Domain Name / The
+#    DNS domain name of the client).
+#    see https://github.com/openwrt/odhcpd/issues/19#issuecomment-187574460
+#    see https://github.com/openwrt/odhcpd/issues/19#issuecomment-382432988
+# NB its possible to disable the dnsmasq DNS server by setting its port to 0 and
+#    still use the unbound DNS server.
+#    see https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#disabling_dns_role
+# see option 119 at https://www.iana.org/assignments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml
 uci -q delete dhcp.lan.domain || true
 uci add_list dhcp.lan.domain=$CONFIG_DOMAIN
 uci -q delete dhcp.@dnsmasq[0]
