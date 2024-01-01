@@ -89,6 +89,8 @@ script, e.g., to capture the traffic from the `eth1` (wan) interface:
 
 * `logread -e dnsmasq`
   * show the `dnsmasq` service logs.
+* `logread -e unbound`
+  * show the `unbound` service logs.
 * `uci show`
   * show the configuration.
 * `fw4 print`
