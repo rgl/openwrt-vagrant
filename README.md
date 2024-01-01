@@ -84,6 +84,23 @@ script, e.g., to capture the traffic from the `eth1` (wan) interface:
 
 * Be aware that the bootloader and the machine console can be accessed without password.
   * For more details see [Serial console password](https://oldwiki.archive.openwrt.org/doc/howto/serial.console.password).
+* When using the Unbound DNS server, you can configure extra DNS zones.
+  * Edit the `/etc/unbound/unbound_srv.conf` file from the terminal.
+    * Or, edit it from the LuCI web interface:
+      * Select the `Services > Recursive DNS` menu.
+      * Select the `Files` tab.
+      * Select the `Edit: Server` tab.
+  * Append the zone content. e.g.:
+    ```conf
+    domain-insecure: example.test
+    private-domain: example.test
+    local-zone: example.test static
+    local-data: "example.test. 7200 IN SOA localhost. nobody.invalid. 28400605 3600 1200 9600 300"
+    local-data: "example.test. 7200 IN NS localhost."
+    local-data: 'example.test. 7200 IN TXT "comment=local intranet dns zone"'
+    local-data: "hello.example.test. 300 IN A 192.168.1.11"
+    ```
+  * Reload the service with `service unbound reload`.
 
 # Commands
 
