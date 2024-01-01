@@ -2,8 +2,10 @@
 set -euxo pipefail
 
 vm_name=${1:-openwrt}; shift || true
-interface_name=${1:-eth1}; shift || true
-capture_filter=${1:-not port 22 and not port 3000 and not port 3100 and not 4000 and not port 16992 and not port 16994}; shift || true
+# interfaces: eth0 (vagrant/management), eth1 (wan), eth2 (lan).
+interface_name=${1:-eth2}; shift || true
+# ports: 22 (SSH).
+capture_filter=${1:-not port 22}; shift || true
 
 mkdir -p tmp
 vagrant ssh-config $vm_name >tmp/$vm_name-ssh-config.conf
