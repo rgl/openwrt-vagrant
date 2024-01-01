@@ -201,3 +201,5 @@ opkg install luci-app-wol
 # NB this will be available under the System, Attended Sysupgrade LuCI menu.
 # see https://openwrt.org/docs/guide-user/installation/attended.sysupgrade
 opkg install luci-app-attendedsysupgrade
+uci set attendedsysupgrade.client.advanced_mode='1'
+uci commit attendedsysupgrade
