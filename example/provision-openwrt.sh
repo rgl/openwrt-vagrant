@@ -170,6 +170,9 @@ cat >/etc/adblock/adblock.whitelist <<'EOF'
 # allow the twitter link shortening. my twitter addiction must go on...
 # NB this is denied by the yoyo list.
 t.co
+# allow the ClickHouse project.
+# see https://github.com/ClickHouse/ClickHouse
+clickhouse.com
 EOF
 # configure the startup trigger.
 uci set adblock.global.adb_trigger=wan
