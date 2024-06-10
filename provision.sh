@@ -20,6 +20,7 @@ resize2fs /dev/loop0
 
 # install useful packages.
 opkg install qemu-ga
+opkg install openssh-sftp-server
 opkg install rsync
 opkg install sfdisk lsblk
 opkg install usbutils kmod-usb3 kmod-usb-storage-uas
