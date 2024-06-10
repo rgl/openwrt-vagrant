@@ -20,6 +20,7 @@ resize2fs /dev/loop0
 
 # install useful packages.
 opkg install qemu-ga
+opkg install nfs-utils kmod-fs-nfs kmod-fs-nfs-v4
 opkg install openssh-sftp-server
 opkg install rsync
 opkg install sfdisk lsblk
