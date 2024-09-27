@@ -126,5 +126,6 @@ script, e.g., to capture the traffic from the `eth1` (wan) interface:
 * [OpenWrt Documentation](https://openwrt.org/docs)
   * [UCI system](https://openwrt.org/docs/guide-user/base-system/uci)
   * [Opkg package manager](https://openwrt.org/docs/guide-user/additional-software/opkg)
+  * [OpenWrt on x86 hardware (PC / VM / server)](https://openwrt.org/docs/guide-user/installation/openwrt_x86)
   * [Partition layout](https://openwrt.org/docs/guide-user/installation/openwrt_x86#partition_layout)
 * [Vagrant OpenWrt Guest Plugin](https://github.com/hashicorp/vagrant/tree/main/plugins/guests/openwrt)
