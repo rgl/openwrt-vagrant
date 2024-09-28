@@ -11,6 +11,11 @@ CONFIG_WINDOWS_MAC="$7"
 CONFIG_WINDOWS_IP="$8"
 CONFIG_USE_DNSMASQ='0' # 0: replace dnsmasq with odhcpd and unbound. 1: use dnsmasq.
 CONFIG_DOMAIN="$(uci get system.@system[0].hostname | sed -E 's,[^.]+\.(.+),\1,')"
+CONFIG_STATIC_LEASES="
+debian $CONFIG_DEBIAN_MAC $CONFIG_DEBIAN_IP
+ubuntu $CONFIG_UBUNTU_MAC $CONFIG_UBUNTU_IP
+windows $CONFIG_WINDOWS_MAC $CONFIG_WINDOWS_IP
+"
 
 # update the package cache.
 opkg update
@@ -183,21 +188,17 @@ service adblock reload
 
 # configure static leases.
 while uci -q delete dhcp.@host[0]; do :; done
-id="$(uci add dhcp host)"
-uci set "dhcp.$id.name=debian"
-uci set "dhcp.$id.dns=1"
-uci set "dhcp.$id.mac=$CONFIG_DEBIAN_MAC"
-uci set "dhcp.$id.ip=$CONFIG_DEBIAN_IP"
-id="$(uci add dhcp host)"
-uci set "dhcp.$id.name=ubuntu"
-uci set "dhcp.$id.dns=1"
-uci set "dhcp.$id.mac=$CONFIG_UBUNTU_MAC"
-uci set "dhcp.$id.ip=$CONFIG_UBUNTU_IP"
-id="$(uci add dhcp host)"
-uci set "dhcp.$id.name=windows"
-uci set "dhcp.$id.dns=1"
-uci set "dhcp.$id.mac=$CONFIG_WINDOWS_MAC"
-uci set "dhcp.$id.ip=$CONFIG_WINDOWS_IP"
+echo "$CONFIG_STATIC_LEASES" | while read -r line; do
+    [ -z "$line" ] && continue
+    name="$(echo "$line" | awk '{print $1}')"
+    mac="$(echo "$line" | awk '{print $2}')"
+    ip="$(echo "$line" | awk '{print $3}')"
+    id="$(uci add dhcp host)"
+    uci set "dhcp.$id.name=$name"
+    uci set "dhcp.$id.dns=1"
+    uci set "dhcp.$id.mac=$mac"
+    uci set "dhcp.$id.ip=$ip"
+done
 uci commit dhcp
 if [ "$CONFIG_USE_DNSMASQ" = '1' ]; then
 service dnsmasq reload
