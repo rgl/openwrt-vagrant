@@ -41,7 +41,7 @@ opkg install tcpdump
 opkg install bind-dig
 
 # replace dnsmasq with odhcpd and unbound.
-if [ "$CONFIG_USE_DNSMASQ" == '0' ]; then
+if [ "$CONFIG_USE_DNSMASQ" = '0' ]; then
 # see https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#replacing_dnsmasq_with_odhcpd_and_unbound
 # see https://openwrt.org/docs/guide-user/services/dns/dot_unbound
 # see https://openwrt.org/docs/techref/odhcpd
@@ -103,7 +103,7 @@ unbound-control status
 fi
 
 # use dnsmasq.
-if [ "$CONFIG_USE_DNSMASQ" == '1' ]; then
+if [ "$CONFIG_USE_DNSMASQ" = '1' ]; then
 # configure DoH (DNS over HTTPS).
 # NB this configures dnsmasq to proxy requests to the local https-dns-proxy
 #    service(s), which in turn will use doh to resolve the requests.
@@ -199,7 +199,7 @@ uci set "dhcp.$id.dns=1"
 uci set "dhcp.$id.mac=$CONFIG_WINDOWS_MAC"
 uci set "dhcp.$id.ip=$CONFIG_WINDOWS_IP"
 uci commit dhcp
-if [ "$CONFIG_USE_DNSMASQ" == '1' ]; then
+if [ "$CONFIG_USE_DNSMASQ" = '1' ]; then
 service dnsmasq reload
 else
 service odhcpd reload
