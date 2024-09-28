@@ -61,7 +61,7 @@ opkg install odhcpd
 #    see https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#disabling_dns_role
 # see option 119 at https://www.iana.org/assignments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml
 uci -q delete dhcp.lan.domain || true
-uci add_list dhcp.lan.domain=$CONFIG_DOMAIN
+uci add_list "dhcp.lan.domain=$CONFIG_DOMAIN"
 uci -q delete dhcp.@dnsmasq[0]
 uci set dhcp.lan.dhcpv4=server
 uci set dhcp.odhcpd.maindhcp=1
@@ -69,7 +69,7 @@ uci commit dhcp
 service odhcpd restart
 # use unbound as the DNS server/resolver/forwarder.
 opkg install unbound-control unbound-daemon
-uci set unbound.ub_main.domain=$CONFIG_DOMAIN
+uci set "unbound.ub_main.domain=$CONFIG_DOMAIN"
 uci set unbound.@unbound[0].add_local_fqdn=1
 uci set unbound.@unbound[0].add_wan_fqdn=1
 uci set unbound.@unbound[0].dhcp4_slaac6=1
