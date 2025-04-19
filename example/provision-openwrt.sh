@@ -35,9 +35,9 @@ uci commit
 service network reload
 
 # wait until the network is configured.
-while [ -z "$(ip addr show dev eth1 | grep -E ' inet \d+(\.\d+)+/')" ]; do sleep 5; done
+$SHELL -c 'while [ -z "$(ip addr show dev eth1 | grep -E " inet \d+(\.\d+)+/")" ]; do sleep 5; done'
 CONFIG_LAN_IP_RE="$(echo "$CONFIG_LAN_IP" | sed -E 's,([.]),\\\1,g')"
-while [ -z "$(ip addr show dev eth2 | grep -E " inet $CONFIG_LAN_IP_RE/")" ]; do sleep 5; done
+$SHELL -c "while [ -z \"\$(ip addr show dev eth2 | grep -E ' inet $CONFIG_LAN_IP_RE/')\" ]; do sleep 5; done"
 
 # install tcpdump.
 opkg install tcpdump
@@ -103,6 +103,8 @@ uci set unbound.fwd_cloudflare.enabled=1
 uci set unbound.fwd_cloudflare.fallback=0
 uci commit unbound
 service unbound restart
+# wait until unbound is ready.
+$SHELL -c 'while ! unbound-control status 2>&1 >/dev/null; do sleep 5; done'
 # show status.
 unbound-control status
 fi
@@ -146,19 +148,28 @@ while [ -z "$(dig +short debian.org @127.0.0.1 -p 5053)" ]; do sleep 5; done
 fi
 
 # wait until names can be resolved.
-while [ -z "$(dig +short debian.org)" ]; do sleep 5; done
+$SHELL -c 'while [ -z "$(dig +short debian.org)" ]; do sleep 5; done'
 
 # configure ad blocking.
 # see https://openwrt.org/docs/guide-user/services/ad-blocking
 # see https://openwrt.org/packages/pkgdata/adblock
-# see https://github.com/openwrt/packages/tree/openwrt-23.05/net/adblock
+# see https://github.com/openwrt/packages/tree/openwrt-24.10/net/adblock
 # see /etc/config/adblock
 # see /tmp/dnsmasq.d/adb_list.overall (when using dnsmasq as the DNS forwarder)
 # see /var/lib/unbound/adb_list.overall (when using unbound as the DNS forwarder)
 opkg install adblock luci-app-adblock && service rpcd restart
 
+# configure the adblock dns backend.
+if [ "$CONFIG_USE_DNSMASQ" = '1' ]; then
+    uci set adblock.global.adb_dns='dnsmasq'
+else
+    uci set adblock.global.adb_dns='unbound'
+fi
+uci commit adblock
+$SHELL -c 'while ! service adblock restart 2>&1 >/dev/null; do sleep 5; done'
+
 # wait until adblock is ready.
-while [ -z "$(service adblock status | grep -E 'adblock_status\s*:\s*enabled')" ]; do sleep 5; done
+$SHELL -c 'while [ -z "$(service adblock status | grep -E "adblock_status\s*:\s*enabled")" ]; do sleep 5; done'
 
 # configure adblock.
 uci delete adblock.global.adb_sources

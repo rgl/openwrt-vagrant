@@ -2,12 +2,12 @@ packer {
   required_plugins {
     # see https://github.com/hashicorp/packer-plugin-qemu
     qemu = {
-      version = ">= 1.1.0"
+      version = "1.1.1"
       source  = "github.com/hashicorp/qemu"
     }
     # see https://github.com/hashicorp/packer-plugin-vagrant
     vagrant = {
-      version = ">= 1.1.5"
+      version = "1.1.5"
       source  = "github.com/hashicorp/vagrant"
     }
   }

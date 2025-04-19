@@ -26,8 +26,8 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define :openwrt do |config|
-    config.vm.box = 'openwrt-23.05-amd64'
-    #config.vm.box = 'openwrt-23.05-uefi-amd64'
+    config.vm.box = 'openwrt-24.10-amd64'
+    #config.vm.box = 'openwrt-24.10-uefi-amd64'
     config.vm.hostname = 'openwrt.lan'
     config.vm.provider 'libvirt' do |lv, config|
       lv.memory = 2*1024

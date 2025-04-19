@@ -1,10 +1,10 @@
 SHELL=bash
 .SHELLFLAGS=-euo pipefail -c
-VERSION=23.05
-IMG_URL='https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-23.05.5-x86-64-generic-squashfs-combined.img.gz'
-IMG_SHA='788a786a7c2692cce1ac8922b71c4030958cb8ddd7f6b507fbba79c757a04fdf'
-IMG_UEFI_URL='https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-23.05.5-x86-64-generic-squashfs-combined-efi.img.gz'
-IMG_UEFI_SHA='e5300e3cb4c32029c3eec5cf8e85ac99222233a231b35e2175608badb10a7638'
+VERSION=24.10
+IMG_URL='https://downloads.openwrt.org/releases/24.10.1/targets/x86/64/openwrt-24.10.1-x86-64-generic-squashfs-combined.img.gz'
+IMG_SHA='72d6776db565e1707d72566289c111d57984ad5d75a4065f025a7caef1e34b17'
+IMG_UEFI_URL='https://downloads.openwrt.org/releases/24.10.1/targets/x86/64/openwrt-24.10.1-x86-64-generic-squashfs-combined-efi.img.gz'
+IMG_UEFI_SHA='c669557e31324bb81842d2f154c5e85a9c99491db823b9ac320eab2c169dc425'
 IMG="tmp/$(basename $(notdir ${IMG_URL}))"
 IMG_UEFI="tmp/$(basename $(notdir ${IMG_UEFI_URL}))"
 
