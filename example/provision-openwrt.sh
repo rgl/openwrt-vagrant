@@ -172,17 +172,19 @@ $SHELL -c 'while ! service adblock restart 2>&1 >/dev/null; do sleep 5; done'
 $SHELL -c 'while [ -z "$(service adblock status | grep -E "adblock_status\s*:\s*enabled")" ]; do sleep 5; done'
 
 # configure adblock.
-uci delete adblock.global.adb_sources
-uci add_list adblock.global.adb_sources=adaway
-uci add_list adblock.global.adb_sources=adguard
-uci add_list adblock.global.adb_sources=disconnect
-uci add_list adblock.global.adb_sources=stevenblack
-uci add_list adblock.global.adb_sources=yoyo
+# default: adguard, adguard_tracking, certpl.
+uci delete adblock.global.adb_feed
+uci add_list adblock.global.adb_feed=adaway
+uci add_list adblock.global.adb_feed=adguard
+uci add_list adblock.global.adb_feed=adguard_tracking
+uci add_list adblock.global.adb_feed=disconnect
+uci add_list adblock.global.adb_feed=stevenblack
+uci add_list adblock.global.adb_feed=yoyo
 # configure the stevenblack variants.
-uci -q delete adblock.global.adb_stb_sources || true
-uci add_list adblock.global.adb_stb_sources=hosts # standard.
+uci -q delete adblock.global.adb_stb_feed || true
+uci add_list adblock.global.adb_stb_feed=hosts # standard.
 # configure the allow list.
-cat >/etc/adblock/adblock.whitelist <<'EOF'
+cat >/etc/adblock/adblock.allowlist <<'EOF'
 # allow the twitter link shortening. my twitter addiction must go on...
 # NB this is denied by the yoyo list.
 t.co
@@ -195,7 +197,7 @@ uci set adblock.global.adb_trigger=wan
 uci set adblock.global.adb_triggerdelay=15
 # apply changes.
 uci commit adblock
-service adblock reload
+$SHELL -c 'while ! service adblock reload 2>&1 >/dev/null; do sleep 5; done'
 
 # configure static leases.
 while uci -q delete dhcp.@host[0]; do :; done
