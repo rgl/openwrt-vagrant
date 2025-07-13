@@ -11,14 +11,14 @@ Install:
 * [Packer](https://www.packer.io/)
 * [Vagrant](https://www.vagrantup.com/)
 * [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
-* [Debian 12 base image](https://github.com/rgl/debian-vagrant)
-* [Ubuntu 22.04 base image](https://github.com/rgl/ubuntu-vagrant)
-* [Windows 2022 base image](https://github.com/rgl/windows-vagrant)
+* [Debian 12 UEFI base image](https://github.com/rgl/debian-vagrant)
+* [Ubuntu 22.04 UEFI base image](https://github.com/rgl/ubuntu-vagrant)
+* [Windows 2022 UEFI base image](https://github.com/rgl/windows-vagrant)
 
-Create the base image:
+Create the UEFI base image:
 
 ```bash
-make build-libvirt
+make build-uefi-libvirt
 ```
 
 Start the example Vagrant environment:
